@@ -1,7 +1,7 @@
 /*  1.
 Посчитать количество матчей, в которых first_blood_time больше
 1 минуты, но меньше 3х минут;
-*/
+ */
 
 SELECT COUNT(*) FROM match WHERE first_blood_time between 60 and 180;
 
@@ -62,3 +62,12 @@ group by account_id;
 потраченного золота, суммарное количество позитивных
 отзывов зрителей, суммарное количество негативных отзывов.
  */
+
+select count(m.match_id),
+       max(p.gold_spent) as max_gold_spent,
+       sum(m.positive_votes) as sum_positive_votes,
+       sum(m.negative_votes) as sum_negative_votes
+from players p
+    inner join match m on m.match_id = p.match_id
+    inner join hero_names hn on hn.hero_id = p.hero_id
+group by hn.hero_id;
