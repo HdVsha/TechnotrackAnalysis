@@ -37,7 +37,7 @@ ORDER BY account_id;
  */
 
 SELECT p.account_id,
-       avg(m.duration) AS average_match_duration
+       AVG(m.duration) AS average_match_duration
 FROM match m
          INNER JOIN players p ON m.match_id = p.match_id
 GROUP BY p.account_id;
@@ -56,8 +56,7 @@ SELECT COUNT(distinct hero_id) AS num_unique_heroes,
        AVG(m.duration)         AS avg_match_duration
 FROM match m
          INNER JOIN players p ON m.match_id = p.match_id
-WHERE p.account_id = 0
-GROUP BY account_id;
+WHERE p.account_id = 0;
 
 ---
 
@@ -79,8 +78,15 @@ FROM players p
 GROUP BY hn.hero_id;
 
 ---
+
 /*  6.
 вывести матчи в которых: хотя бы одна покупка item_id = 42
-состоялась позднее 100 секунды с начала мачта;
+состоялась позднее 100 секунды с начала матча;
  */
 
+SELECT pl.match_id -- number of lines = 49882
+FROM purchase_log pl
+WHERE (pl.item_id = 42)
+  AND (pl.time > 100)
+GROUP BY pl.match_id
+HAVING COUNT(pl.item_id) > 0;
