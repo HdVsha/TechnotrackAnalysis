@@ -3,7 +3,10 @@
 1 минуты, но меньше 3х минут;
  */
 
-SELECT COUNT(*) FROM match WHERE first_blood_time between 60 and 180;
+SELECT COUNT(*)
+FROM match
+WHERE first_blood_time BETWEEN 60
+          AND 180;
 
 ---
 
@@ -16,11 +19,14 @@ SELECT COUNT(*) FROM match WHERE first_blood_time between 60 and 180;
  */
 
 SELECT DISTINCT account_id
-from players inner join match  -- because both tables have match_id
-    using(match_id)
-where   (match.radiant_win = 'True')
-        and (account_id != 0)
-        and (match.positive_votes > match.negative_votes)
+FROM players
+         INNER JOIN match -- because both tables have match_id
+                    USING (match_id)
+WHERE (match.radiant_win = 'True')
+  AND (account_id != 0)
+  AND (
+    match.positive_votes > match.negative_votes
+    )
 ORDER BY account_id;
 
 ---
@@ -30,11 +36,11 @@ ORDER BY account_id;
 его матчей;
  */
 
-select p.account_id,
-       avg(m.duration) as average_match_duration
-from match m
-         inner join players p on m.match_id = p.match_id
-group by p.account_id;
+SELECT p.account_id,
+       avg(m.duration) AS average_match_duration
+FROM match m
+         INNER JOIN players p ON m.match_id = p.match_id
+GROUP BY p.account_id;
 
 ---
 
@@ -45,13 +51,13 @@ group by p.account_id;
 игроки) для анонимных игроков;
  */
 
-select count(DISTINCT hero_id) as num_unique_heroes,
-       sum(p.gold_spent) as sum_gold_spent,
-       avg(m.duration) as avg_match_duration
-from match m
-         inner join players p on m.match_id = p.match_id
-where p.account_id = 0
-group by account_id;
+SELECT COUNT(distinct hero_id) AS num_unique_heroes,
+       SUM(p.gold_spent)       AS sum_gold_spent,
+       AVG(m.duration)         AS avg_match_duration
+FROM match m
+         INNER JOIN players p ON m.match_id = p.match_id
+WHERE p.account_id = 0
+GROUP BY account_id;
 
 ---
 
@@ -63,11 +69,18 @@ group by account_id;
 отзывов зрителей, суммарное количество негативных отзывов.
  */
 
-select count(m.match_id),
-       max(p.gold_spent) as max_gold_spent,
-       sum(m.positive_votes) as sum_positive_votes,
-       sum(m.negative_votes) as sum_negative_votes
-from players p
-    inner join match m on m.match_id = p.match_id
-    inner join hero_names hn on hn.hero_id = p.hero_id
-group by hn.hero_id;
+SELECT COUNT(m.match_id),
+       MAX(p.gold_spent)     AS max_gold_spent,
+       SUM(m.positive_votes) AS sum_positive_votes,
+       SUM(m.negative_votes) AS sum_negative_votes
+FROM players p
+         INNER JOIN match m ON m.match_id = p.match_id
+         INNER JOIN hero_names hn ON hn.hero_id = p.hero_id
+GROUP BY hn.hero_id;
+
+---
+/*  6.
+вывести матчи в которых: хотя бы одна покупка item_id = 42
+состоялась позднее 100 секунды с начала мачта;
+ */
+
