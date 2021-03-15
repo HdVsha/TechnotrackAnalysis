@@ -68,14 +68,17 @@ WHERE p.account_id = 0;
 отзывов зрителей, суммарное количество негативных отзывов.
  */
 
-SELECT COUNT(m.match_id),
+SELECT hn.localized_name,
+       COUNT(m.match_id)     AS count_matches,
+       AVG(p.kills)          AS avg_kills,
+       MIN(p.deaths)         AS min_deaths,
        MAX(p.gold_spent)     AS max_gold_spent,
        SUM(m.positive_votes) AS sum_positive_votes,
        SUM(m.negative_votes) AS sum_negative_votes
 FROM players p
-         INNER JOIN match m ON m.match_id = p.match_id
-         INNER JOIN hero_names hn ON hn.hero_id = p.hero_id
-GROUP BY hn.hero_id;
+         INNER JOIN match m USING(match_id)
+         INNER JOIN hero_names hn USING(hero_id)
+GROUP BY hero_id;
 
 ---
 
@@ -90,3 +93,15 @@ WHERE (pl.item_id = 42)
   AND (pl.time > 100)
 GROUP BY pl.match_id
 HAVING COUNT(pl.item_id) > 0;
+
+---
+
+/*  7.
+получить первые 20 строк из всех данных из таблиц с матчами и
+оплатами (purchase_log);
+ */
+
+SELECT *
+FROM match
+    INNER JOIN purchase_log USING(match_id)
+LIMIT 20;
