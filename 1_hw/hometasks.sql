@@ -24,3 +24,24 @@ where   (match.radiant_win = 'True')
 ORDER BY account_id;
 
 ---
+
+/*  3.
+Получить идентификатор игрока и среднюю продолжительность
+его матчей;
+ */
+
+select p.account_id,
+       avg(m.duration) as average_match_duration
+from match m
+         join players p on m.match_id = p.match_id
+group by p.account_id;
+
+---
+
+/*  4.
+ Получить суммарное количество потраченного золота,
+уникальное количество использованных персонажей, среднюю
+продолжительность матчей (в которых участвовали данные
+игроки) для анонимных игроков;
+ */
+
