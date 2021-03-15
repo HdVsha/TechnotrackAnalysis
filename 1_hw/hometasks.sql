@@ -33,15 +33,32 @@ ORDER BY account_id;
 select p.account_id,
        avg(m.duration) as average_match_duration
 from match m
-         join players p on m.match_id = p.match_id
+         inner join players p on m.match_id = p.match_id
 group by p.account_id;
 
 ---
 
 /*  4.
  Получить суммарное количество потраченного золота,
-уникальное количество использованных персонажей, среднюю
+ количество уникальных использованных персонажей, среднюю
 продолжительность матчей (в которых участвовали данные
 игроки) для анонимных игроков;
  */
 
+select count(DISTINCT hero_id) as num_unique_heroes,
+       sum(p.gold_spent) as sum_gold_spent,
+       avg(m.duration) as avg_match_duration
+from match m
+         inner join players p on m.match_id = p.match_id
+where p.account_id = 0
+group by account_id;
+
+---
+
+/*  5.
+для каждого героя (hero_name) вывести: количество матчей в
+которых был использован, среднее количество убийств,
+минимальное количество смертей, максимальное количество
+потраченного золота, суммарное количество позитивных
+отзывов зрителей, суммарное количество негативных отзывов.
+ */
