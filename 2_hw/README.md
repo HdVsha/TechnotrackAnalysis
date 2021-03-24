@@ -1,0 +1,1 @@
+![](https://github.com/HdVsha/TechnotrackAnalysis/blob/main/2_hw/maxrating.jpg)
