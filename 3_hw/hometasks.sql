@@ -23,3 +23,30 @@ GROUP BY tariff
 
 -- Ответ: теряем больше всего, когда приписывается водитель(видимо клиенты отменяют заказ по какой-то причине),
 -- и когда приезжает машина(возможно, слишком долго едет или клиент передумывает)
+
+---
+
+/* 2.
+
+По каждому клиенту вывести топ используемых им
+тарифов по убыванию в массиве, а также подсчитать
+сколькими тарифами он пользуется.
+
+ */
+
+SELECT idhash_client,
+       arraySort((x, y) -> -y,
+           sumMap(tariffs_arr, arrayResize(CAST([], 'Array(UInt64)'), length(tariffs_arr), toUInt64(1))).1 AS tariff_arr,
+           sumMap(tariffs_arr, arrayResize(CAST([], 'Array(UInt64)'), length(tariffs_arr), toUInt64(1))).2 AS tariff_occurence_arr)
+            AS tariff_usage_top,
+       length(tariff_usage_top) as number_of_tariffs_using
+FROM (
+    SELECT
+        idhash_client,
+        groupArray(tariff) AS tariffs_arr
+    FROM views v
+    GROUP BY idhash_client
+)
+GROUP BY idhash_client
+
+
