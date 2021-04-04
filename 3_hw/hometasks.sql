@@ -73,3 +73,21 @@ WHERE (leave_time is not null) AND (come_time is not null)
 GROUP BY h3, leave_time, come_time
 ORDER BY h3_num DESC
 LIMIT 10;
+
+---
+
+/* 4.
+
+Вывести медиану и 95 квантиль времени поиска
+водителя.
+
+ */
+
+SELECT
+    idhash_order,
+    dateDiff('minute', order_dttm, da_dttm) as driver_search_time,
+    median(driver_search_time) as median,
+    quantile(0.95)(driver_search_time) as quantile
+FROM orders o
+WHERE (order_dttm is not null) AND (da_dttm is not null)
+GROUP BY  idhash_order, order_dttm, da_dttm
