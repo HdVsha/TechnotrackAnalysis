@@ -19,7 +19,7 @@ SELECT tariff,
 FROM views v
     JOIN orders o
     ON v.idhash_order = o.idhash_order
-GROUP BY tariff
+GROUP BY tariff;
 
 -- Ответ: теряем больше всего, когда приписывается водитель(видимо клиенты отменяют заказ по какой-то причине),
 -- и когда приезжает машина(возможно, слишком долго едет или клиент передумывает)
@@ -47,6 +47,29 @@ FROM (
     FROM views v
     GROUP BY idhash_client
 )
-GROUP BY idhash_client
+GROUP BY idhash_client;
 
+-- Explanation:
+    -- first = [1,2,3,3,4,5]
+    -- second = [1,1,1,1,1,1]
+    -- sumMap(first,second) -> ([1,2,3,4,5], [1,1,2,1,1])
 
+---
+
+/* 3.
+
+Вывести топ 10 гексагонов (размер 7) из которых уезжают
+с 7 до 10 утра и в которые едут с 18-00 до 20-00 в сумме
+по всем дням
+(Don't know how to compare hours :( )
+ */
+SELECT
+    geoToH3(longitude, latitude, 7) as h3,
+    toStartOfHour(cc_dttm) as leave_time,
+    toStartOfHour(finish_dttm) as come_time,
+    count(h3) as h3_num
+FROM views v JOIN orders o on v.idhash_order = o.idhash_order
+WHERE (leave_time is not null) AND (come_time is not null)
+GROUP BY h3, leave_time, come_time
+ORDER BY h3_num DESC
+LIMIT 10;
